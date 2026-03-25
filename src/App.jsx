@@ -1,9 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [activeSection, setActiveSection] = useState('home');
+  const [formStatus, setFormStatus] = useState(null); // 'sending', 'sent', 'error'
+  const formRef = useRef();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -16,6 +25,33 @@ const App = () => {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
     setIsMenuOpen(false);
     setActiveSection(id);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    setFormStatus('sending');
+
+    // Replace these with your real values from EmailJS dashboard
+    const SERVICE_ID = "service_w9odyjt";
+    const TEMPLATE_ID = "template_d0z69x3"; // Get this from EmailJS
+    const PUBLIC_KEY = "JmZ0siLUvUh5ItBYJ";   // Get this from EmailJS
+
+    emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
+      .then((result) => {
+        console.log(result.text);
+        setFormStatus('sent');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setFormStatus(null), 5000);
+      }, (error) => {
+        console.log(error.text);
+        setFormStatus('error');
+        setTimeout(() => setFormStatus(null), 5000);
+      });
   };
 
   const navProgress = Math.min(scrollY / (document.body.scrollHeight - window.innerHeight || 1), 1);
@@ -188,7 +224,7 @@ const App = () => {
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
               </a>
-              <a href="mailto:denethmi@example.com" className="social-icon" aria-label="Email">
+              <a href="mailto:ranasinghetharushi3@gmail.com" className="social-icon" aria-label="Email">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
               </a>
             </div>
@@ -398,26 +434,85 @@ const App = () => {
             <p className="section-sub" style={{ margin: '1rem auto 2.5rem', maxWidth: '480px' }}>
               I'm open to internship opportunities, collaborations, or just a friendly chat about tech!
             </p>
-            <div className="contact-actions">
-              <a
-                href="https://www.linkedin.com/in/denethmi-ranasinghe-800149338/"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
-                LinkedIn Profile
-              </a>
-              <a
-                href="https://github.com/denethmiranasinghe"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-outline"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" /></svg>
-                GitHub Profile
-              </a>
-            </div>
+            <form ref={formRef} className="contact-form" onSubmit={handleContactSubmit}>
+              <div className="form-group">
+                <label htmlFor="name">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  className="form-input"
+                  placeholder="Your Name"
+                  required
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="form-input"
+                  placeholder="ranasinghetharushi3@gmail.com"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group full">
+                <label htmlFor="subject">Subject</label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  className="form-input"
+                  placeholder="What is this about?"
+                  required
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group full">
+                <label htmlFor="message">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  className="form-textarea"
+                  placeholder="Tell me about your amazing project..."
+                  required
+                  value={formData.message}
+                  onChange={handleInputChange}
+                ></textarea>
+              </div>
+
+              {formStatus === 'sent' && (
+                <div className="success-msg">
+                  ✨ Thank you! Your message has been sent successfully.
+                </div>
+              )}
+
+              {formStatus === 'error' && (
+                <div className="success-msg" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}>
+                  ❌ Something went wrong. Please try again or contact me via LinkedIn.
+                </div>
+              )}
+
+              <div className="contact-actions">
+                <button type="submit" className="form-submit" disabled={formStatus === 'sending'}>
+                  {formStatus === 'sending' ? 'Sending...' : 'Send Message'}
+                </button>
+                <div className="social-links-small">
+                  <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="social-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
+                  </a>
+                  <a href="https://github.com" target="_blank" rel="noreferrer" className="social-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" /></svg>
+                  </a>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </section>

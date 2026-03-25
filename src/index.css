@@ -707,16 +707,108 @@ h1, h2, h3, h4 { font-family: var(--font-head); }
 
 /* ─── CONTACT ─────────────────────────────────────── */
 .contact-box {
-  max-width: 760px;
+  max-width: 850px;
   margin: 0 auto;
   padding: 4rem 3rem;
   text-align: center;
 }
+
+.contact-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  text-align: left;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 0.6rem; }
+.form-group.full { grid-column: span 2; }
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.form-input, .form-textarea {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all var(--transition);
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea { min-height: 150px; resize: vertical; }
+
 .contact-actions {
+  grid-column: span 2;
   display: flex;
-  justify-content: center;
-  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
   flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.form-submit {
+  padding: 0.9rem 2.5rem;
+  font-size: 1rem;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8px 24px -8px var(--accent-glow);
+  transition: all var(--transition);
+}
+
+.form-submit:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -8px var(--accent-glow);
+}
+
+.form-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.social-links-small {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.success-msg {
+  grid-column: span 2;
+  padding: 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  color: #10b981;
+  font-size: 0.9rem;
+  text-align: center;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 650px) {
+  .contact-form { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: span 1; }
+  .contact-actions { grid-column: span 1; flex-direction: column; text-align: center; }
 }
 
 /* ─── FOOTER ─────────────────────────────────────── */
